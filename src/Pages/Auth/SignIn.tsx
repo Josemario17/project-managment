@@ -1,4 +1,4 @@
-import GoogleButton from "../../components/ui/googleButton";
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -16,33 +16,24 @@ import { toast } from "sonner";
 import { Input } from "../../components/ui/input";
 import FormLayout from "../../components/layouts/FormLayout";
 import { Link } from "react-router-dom";
-
-const FormSchema = z.object({
-    email: z.string()
-        .email("Email inválido.")
-        .min(4, "Campo obrigatório.")
-        .max(50, "Máximo de 50 caracteres."),
-    password: z.string()
-        .min(1, "Campo obrigatório.")
-        .min(6, "Senha deve ter no mínimo 6 caracteres.")
-})
+import { FormSchemaSignIn } from "./utils/validations";
 
 export function InputForm() {
-    const form = useForm<z.infer<typeof FormSchema>>({
-        resolver: zodResolver(FormSchema),
+    const form = useForm<z.infer<typeof FormSchemaSignIn>>({
+        resolver: zodResolver(FormSchemaSignIn),
         defaultValues: {
             email: "",
             password: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    function onSubmit(data: z.infer<typeof FormSchemaSignIn>) {
         toast(`Entrada com Sucesso!`)
     }
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 ">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6 mb-4">
                 <FormField
                     control={form.control}
                     name="email"
@@ -87,9 +78,9 @@ export const FormDescription = ({text}: {text: string}) => {
     )
 }
 
-export const FormLink = ({text, link}: {text: string, link: string}) => {
+export const FormLink = ({text, link, GoToText}: {text: string, link: string, GoToText: string}) => {
     return (
-        <p className="text-sm text-gray-500">{text} <Link to={link} className="text-blue-100 hover:underline">Criar uma</Link></p>
+        <p className="text-sm text-gray-500">{text} <Link to={link} className="text-blue-100 hover:underline">{GoToText}</Link></p>
     )
 }
 
@@ -99,8 +90,7 @@ export default function SignIn() {
             <FormTitle text="Inicie a Sessão"></FormTitle>
             <FormDescription text="Entre com sua conta"></FormDescription>
             <InputForm></InputForm>
-            <GoogleButton></GoogleButton>
-            <FormLink text="Não tem uma conta?" link="/signup"></FormLink>
+            <FormLink text="Não tem uma conta?" link="/signup" GoToText="Criar Conta"></FormLink>
         </FormLayout>
     )
 }
