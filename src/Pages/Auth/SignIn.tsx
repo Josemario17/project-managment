@@ -20,7 +20,7 @@ import { getDataOfUser, signInUser } from "./utils/auth";
 import { toast } from "sonner";
 import { useState } from "react";
 import Cookies from 'js-cookie'
-import { handleLoginSuccess } from "./SignUp";
+import { handleSuccess } from "./SignUp";
 import Spin from "../../components/Common/Spin";
 
 export function InputForm() {
@@ -59,7 +59,7 @@ export function InputForm() {
             const user = await fetchUserData(token);
             persistUser(user);
             toast.success("Login realizado com sucesso");
-            handleLoginSuccess(navigate, "/Dashboard");
+            handleSuccess(navigate, "/Dashboard");
         } catch (error) {
             toast.error("Falha no login");
             console.log(error)

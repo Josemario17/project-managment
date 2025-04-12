@@ -18,7 +18,7 @@ const Menubar = () => {
               `px-3 py-2 rounded-md transition-colors ${
                 isActive 
                   ? "bg-blue-950 text-white" 
-                  : "text-white hover:bg-blue-800/50"
+                  : " hover:bg-blue-900/50"
               }`
             }
           >
@@ -32,7 +32,7 @@ const Menubar = () => {
               `px-3 py-2 rounded-md transition-colors ${
                 isActive 
                   ? "bg-blue-950 text-white" 
-                  : "text-white hover:bg-blue-800/50"
+                  : "hover:bg-blue-900/50"
               }`
             }
           >
@@ -46,7 +46,7 @@ const Menubar = () => {
               `px-3 py-2 rounded-md transition-colors ${
                 isActive 
                   ? "bg-blue-950 text-white" 
-                  : "text-white hover:bg-blue-800/50"
+                  : "hover:bg-blue-900/50"
               }`
             }
           >
@@ -62,10 +62,10 @@ const Menubar = () => {
 export default function NavBar() {
   return (
     <div>
-      <header className="bg-blue-950/30 text-white p-4 flex items-center justify-around">
+      <header className="bg-white px-24 py-6 flex items-center justify-around border-b border-gray-200 shadow-sm">
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
-            <span className="font-bold text-xl">Gerencimento de Projectos</span>
+            <span className="font-bold text-xl">Gestão de Projectos</span>
           </div>
         </div>
         <Menubar />
@@ -74,10 +74,10 @@ export default function NavBar() {
             <Users className="h-4 w-4 mr-2" />
             José Dos Santos
           </div>
-          <Button variant="outline" className="bg-blue-900 hover:bg-blue-600 text-white border-blue-950 px-2">
+          <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
             <Bell></Bell>
           </Button>
-          <Button variant="outline" className="bg-blue-900 hover:bg-blue-600 text-white border-blue-950 px-2">
+          <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </div>

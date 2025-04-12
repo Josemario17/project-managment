@@ -15,7 +15,7 @@ import { CreatUser } from './utils/create'
 import { useNavigate } from 'react-router-dom'
 
 
-export function handleLoginSuccess(navigate: ReturnType<typeof useNavigate>, url: string) {
+export function handleSuccess(navigate: ReturnType<typeof useNavigate>, url: string) {
     navigate(url); 
 }
 
@@ -35,7 +35,7 @@ export function InputForm() {
         const result = await CreatUser(data)
         if (result) {
             toast.success("Conta criada com sucesso!")
-            handleLoginSuccess(navigate,"/")
+            handleSuccess(navigate,"/")
         }
         else {
             toast.error("Erro ao criar conta.")

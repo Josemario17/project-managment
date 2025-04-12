@@ -30,7 +30,7 @@ export function CardProject() {
                     <div className="line-clamp-1 flex gap-2 font-medium">
                         Produtividade em alta <ArrowUpIcon className="size-4" />
                     </div>
-                    <div className="text-muted-foreground">
+                    <div className="text-muted-foreground text-gray-500">
                         Melhor que o mês anterior
                     </div>
                 </CardFooter>
@@ -52,7 +52,7 @@ export function CardProject() {
                     <div className="line-clamp-1 flex gap-2 font-medium">
                         Equipe expandindo <UsersIcon className="size-4" />
                     </div>
-                    <div className="text-muted-foreground">4 novos colaboradores</div>
+                    <div className="text-muted-foreground text-gray-500">4 novos colaboradores</div>
                 </CardFooter>
             </Card>
             <Card className="@container/card col-span-2">
@@ -72,7 +72,7 @@ export function CardProject() {
                     <div className="line-clamp-1 flex gap-2 font-medium">
                         Entrega mais rápida <ClockIcon className="size-4" />
                     </div>
-                    <div className="text-muted-foreground">Eficiência melhorando</div>
+                    <div className="text-muted-foreground text-gray-500">Eficiência melhorando</div>
                 </CardFooter>
             </Card>
             <Link to={'/projects'}>

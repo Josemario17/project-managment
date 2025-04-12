@@ -8,10 +8,10 @@ import {
 export function CardStats() {
   return (
     <Card className='border-0 py-0 pb-0'>
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row bg-blue-950/15 rounded-lg border shadow-lg shadow-blue-950/20">
+      <CardHeader className="flex flex-col items-stretch space-y-0 border border-gray-200 p-0 sm:flex-row bg-white rounded-lg">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
           <CardTitle>Seja Bem-vindo Nome</CardTitle>
-          <CardDescription>
+          <CardDescription className='text-gray-600'>
             Esta é a estatistica dos seus projectos mais recentes
           </CardDescription>
         </div>
@@ -20,7 +20,7 @@ export function CardStats() {
             return (
               <button
                 key={index}
-                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6 border-l-white/20"
+                className="relative z-30 flex flex-1 flex-col justify-center gap-1 border-t px-6 py-4 text-left even:border-l data-[active=true]:bg-muted/50 sm:border-l sm:border-t-0 sm:px-8 sm:py-6 border-l-gray-200"
               >
                 <span className="text-xs text-muted-foreground">
                   {text}

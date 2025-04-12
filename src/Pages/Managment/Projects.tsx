@@ -11,7 +11,7 @@ export const TitleTopInfo = ({ h1Text, pText }: TitleTopInfoProps) => {
     return (
         <div className='flex flex-col mb-4'>
             <h1 className='text-3xl font-bold'>{h1Text}</h1>
-            <span className='text-muted-foreground'>{pText}</span>
+            <span className='text-muted-foreground text-gray-600'>{pText}</span>
         </div>
     )
 }

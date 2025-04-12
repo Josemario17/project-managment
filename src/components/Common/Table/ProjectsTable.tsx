@@ -34,15 +34,10 @@ import {
     useReactTable,
 } from "@tanstack/react-table"
 import {
-    CheckCircle2Icon,
     ChevronLeftIcon,
     ChevronRightIcon,
-    ChevronsLeftIcon,
-    ChevronsRightIcon,
     Eye,
     GripVerticalIcon,
-    LoaderIcon,
-    MoreVerticalIcon,
     Pencil,
     PlusIcon,
     Trash,
@@ -50,13 +45,6 @@ import {
 import { z } from "zod"
 import { Badge } from "../../ui/badge"
 import { Button } from "../../ui/button"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "../../ui/dropdown-menu"
 import { Label } from "../../ui/label"
 import {
     Select,
@@ -200,7 +188,7 @@ const columns: ColumnDef<TaskItem>[] = [
         header: "Prazo",
         cell: ({ row }) => (
             <div className="w-32">
-                <Badge variant="outline" className="px-6 py-2 my-3 text-muted-foreground">
+                <Badge variant="outline" className="px-6 py-2 my-3 text-muted-foreground border-gray-300">
                     {TransformTIme(row.original.EndTime)}
                 </Badge>
             </div>
@@ -211,7 +199,7 @@ const columns: ColumnDef<TaskItem>[] = [
         header: "Estado",
         cell: ({ row }) => (
             <Badge
-                className={`flex gap-1 px-6 py-1.5 my-3 text-muted-foreground [&_svg]:size-3 rounded-full ${row.original.Status === "Concluido" ? "bg-green-300 text-green-900" : "border-white"
+                className={`flex gap-1 py-1.5 my-3 text-muted-foreground [&_svg]:size-3 rounded-full ${row.original.Status === "Concluido" ? "bg-green-300 px-6  text-green-900" : "border-white"
                     }`}
             >
                 {row.original.Status}
@@ -333,13 +321,16 @@ export function DataTable({
                     View
                 </Label>
                 <div className="flex flex-row justify-between items-center gap-2 w-full">
-                    {/* area para pesquisa */}
-
+                    <Input
+                        id="search"
+                        placeholder="Pesquisar..."
+                        className="w-auto grow bg-white"
+                    />
                     <Select
                         value="option1"
                         onValueChange={(value) => console.log(value)}
                     >
-                        <SelectTrigger className="w-40" id="view-selector" size="default">
+                        <SelectTrigger className="w-80 bg-white" id="view-selector" size="default">
                             <SelectValue placeholder="Select an option" />
                         </SelectTrigger>
                         <SelectContent className="bg-blue-950 text-white">
@@ -348,23 +339,17 @@ export function DataTable({
                             <SelectItem value="option3">Expirados</SelectItem>
                         </SelectContent>
                     </Select>
-                    {/* area para pesquisa */}
-                    <Input
-                        id="search"
-                        placeholder="Pesquisar..."
-                        className="w-auto grow"
-                    />
-                    <Button variant="outline" size="lg" className="bg-blue-950/20 w-1/4">
+                    <Link to={'/projects/create'} className="bg-blue-950 text-white w-1/4 h-12 rounded-md flex items-center justify-center gap-2">
                         <PlusIcon />
                         <span className="hidden lg:inline">Novo Projecto</span>
-                    </Button>
+                    </Link>
                 </div>
             </div>
             <TabsContent
                 value="outline"
                 className="relative flex flex-col gap-4 overflow-auto"
             >
-                <div className="overflow-hidden rounded-lg border">
+                <div className="overflow-hidden rounded-lg bg-white p-4">
                     <DndContext
                         collisionDetection={closestCenter}
                         modifiers={[restrictToVerticalAxis]}
@@ -372,13 +357,15 @@ export function DataTable({
                         sensors={sensors}
                         id={sortableId}
                     >
-                        <Table className="bg-blue-950/20">
+                        <Table>
                             <TableHeader className="sticky top-0 z-10 bg-muted">
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id}>
+                                    <TableRow key={headerGroup.id} className="bg-gray-200">
                                         {headerGroup.headers.map((header) => {
                                             return (
-                                                <TableHead key={header.id} colSpan={header.colSpan} className="py-5">
+                                                <TableHead key={header.id} colSpan={header.colSpan} className="py-5" 
+                                                
+                                                >
                                                     {header.isPlaceholder
                                                         ? null
                                                         : flexRender(
@@ -417,41 +404,11 @@ export function DataTable({
                 </div>
                 <div className="flex items-center justify-end">
                     <div className="flex w-full items-center gap-8 lg:w-fit">
-                        <div className="hidden items-center gap-2 lg:flex">
-                            <Select
-                                value={`${table.getState().pagination.pageSize}`}
-                                onValueChange={(value) => {
-                                    table.setPageSize(Number(value))
-                                }}
-                            >
-                                <SelectTrigger className="w-20" id="rows-per-page">
-                                    <SelectValue
-                                        placeholder={table.getState().pagination.pageSize}
-                                    />
-                                </SelectTrigger>
-                                <SelectContent side="top">
-                                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                                        <SelectItem key={pageSize} value={`${pageSize}`}>
-                                            {pageSize}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
                         <div className="flex w-fit items-center justify-center text-sm font-medium">
                             Página {table.getState().pagination.pageIndex + 1} of{" "}
                             {table.getPageCount()}
                         </div>
                         <div className="ml-auto flex items-center gap-2 lg:ml-0">
-                            <Button
-                                variant="outline"
-                                className="hidden h-8 w-8 p-0 lg:flex"
-                                onClick={() => table.setPageIndex(0)}
-                                disabled={!table.getCanPreviousPage()}
-                            >
-                                <span className="sr-only">Go to first page</span>
-                                <ChevronsLeftIcon />
-                            </Button>
                             <Button
                                 variant="outline"
                                 className="size-8"
@@ -472,34 +429,9 @@ export function DataTable({
                                 <span className="sr-only">Go to next page</span>
                                 <ChevronRightIcon />
                             </Button>
-                            <Button
-                                variant="outline"
-                                className="hidden size-8 lg:flex"
-                                size="icon"
-                                onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                                disabled={!table.getCanNextPage()}
-                            >
-                                <span className="sr-only">Go to last page</span>
-                                <ChevronsRightIcon />
-                            </Button>
                         </div>
                     </div>
                 </div>
-            </TabsContent>
-            <TabsContent
-                value="past-performance"
-                className="flex flex-col px-4 lg:px-6"
-            >
-                <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
-            </TabsContent>
-            <TabsContent value="key-personnel" className="flex flex-col px-4 lg:px-6">
-                <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
-            </TabsContent>
-            <TabsContent
-                value="focus-documents"
-                className="flex flex-col px-4 lg:px-6"
-            >
-                <div className="aspect-video w-full flex-1 rounded-lg border border-dashed"></div>
             </TabsContent>
         </Tabs>
     )

@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../Config/conection";
-import { child, get, getDatabase, ref } from "firebase/database";
+import { child, get, ref } from "firebase/database";
 
 interface AuthCredentials {
   email: string;
