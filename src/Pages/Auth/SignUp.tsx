@@ -9,9 +9,19 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../../components/ui/input'
 import { Button } from '../../components/ui/button'
 import { FormSchemaSignUp } from './utils/validations'
+import { useState } from 'react'
+import Spin from '../../components/Common/Spin'
+import { CreatUser } from './utils/create'
+import { useNavigate } from 'react-router-dom'
 
+
+export function handleLoginSuccess(navigate: ReturnType<typeof useNavigate>, url: string) {
+    navigate(url); 
+}
 
 export function InputForm() {
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate(); 
     const form = useForm<z.infer<typeof FormSchemaSignUp>>({
         resolver: zodResolver(FormSchemaSignUp),
         defaultValues: {
@@ -21,9 +31,22 @@ export function InputForm() {
         },
     })
 
+    const SendToServer = async ({data}: {data: z.infer<typeof FormSchemaSignUp>}) => {
+        const result = await CreatUser(data)
+        if (result) {
+            toast.success("Conta criada com sucesso!")
+            handleLoginSuccess(navigate,"/")
+        }
+        else {
+            toast.error("Erro ao criar conta.")
+        }
+    }
+
     function onSubmit(data: z.infer<typeof FormSchemaSignUp>) {
-        toast("Entrada com Sucesso!")
-        console.log(data)
+        setLoading(true)
+        SendToServer({data})
+        setLoading(false)
+        form.reset()
     }
 
     return (
@@ -36,7 +59,7 @@ export function InputForm() {
                         <FormItem>
                             <FormLabel>Nome</FormLabel>
                             <FormControl>
-                                <Input className="h-10" type="text" placeholder="Seu nome" {...field} />
+                                <Input type="text" placeholder="Seu nome" {...field} />
                             </FormControl>
                             <FormMessage className="text-red-700" />
                         </FormItem>
@@ -49,7 +72,7 @@ export function InputForm() {
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input className="h-10" type="email" placeholder="example@mail.com" {...field} />
+                                <Input type="email" placeholder="example@mail.com" {...field} />
                             </FormControl>
                             <FormMessage className="text-red-700" />
                         </FormItem>
@@ -62,13 +85,15 @@ export function InputForm() {
                         <FormItem>
                             <FormLabel>Senha</FormLabel>
                             <FormControl>
-                                <Input className="h-10" type="password" placeholder="********" {...field} />
+                                <Input type="password" placeholder="********" {...field} />
                             </FormControl>
                             <FormMessage className="text-red-700" />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="bg-white text-black w-full" size={"lg"}>Criar Conta</Button>
+                <Button type="submit" className="bg-blue-950 text-white w-full h-12" size={"lg"}>
+                    {loading ? <Spin /> : "Criar Conta"}
+                </Button>
             </form>
         </Form>
     )

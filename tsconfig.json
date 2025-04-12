@@ -10,8 +10,9 @@
   ],
   "compilerOptions": {
     "baseUrl": ".",
+    "types": ["vite/client"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*":  ["src", "./env.d.ts"]
     }
   }
 }

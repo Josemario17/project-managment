@@ -12,7 +12,7 @@ import { Link } from "react-router-dom"
 
 export function CardProject() {
     return (
-        <div className="grid grid-cols-2 gap-2 pt-2">
+        <div className="grid grid-cols-2 gap-4 pt-4">
             <Card className="@container/card">
                 <CardHeader className="relative">
                     <CardDescription>Tarefas Concluídas</CardDescription>
@@ -75,7 +75,7 @@ export function CardProject() {
                     <div className="text-muted-foreground">Eficiência melhorando</div>
                 </CardFooter>
             </Card>
-            <Link to={'/'}>
+            <Link to={'/projects'}>
                 {/* card para ir para area de projectos */}
                 <Card className="@container/card flex items-center justify-center bg-blue-950/10">
                     <CardHeader className="relative">

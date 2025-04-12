@@ -1,24 +1,7 @@
-import { BellRing, Check } from "lucide-react"
+import { BellRing } from "lucide-react"
 
 import { cn } from "../../../lib/utils"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../ui/card"
-import { Button } from "../../ui/button"
-
-const notifications = [
-    {
-        title: "Your call has been confirmed.",
-        description: "1 hour ago",
-    },
-    {
-        title: "You have a new message!",
-        description: "1 hour ago",
-    },
-    {
-        title: "Your subscription is expiring soon!",
-        description: "2 hours ago",
-    },
-]
-
+import { Card, CardDescription, CardHeader, CardTitle } from "../../ui/card"
 type CardProps = React.ComponentProps<typeof Card>
 
 export function UserCard({ className, ...props }: CardProps) {

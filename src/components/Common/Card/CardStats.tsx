@@ -8,11 +8,11 @@ import {
 export function CardStats() {
   return (
     <Card className='border-0 py-0 pb-0'>
-      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row bg-blue-950/15 rounded-lg border border-white/20 shadow-lg shadow-blue-950/20">
+      <CardHeader className="flex flex-col items-stretch space-y-0 border-b p-0 sm:flex-row bg-blue-950/15 rounded-lg border shadow-lg shadow-blue-950/20">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Projectos em Gerenciamento</CardTitle>
+          <CardTitle>Seja Bem-vindo Nome</CardTitle>
           <CardDescription>
-            Projectos mais recentes que estão a sendo geridos.
+            Esta é a estatistica dos seus projectos mais recentes
           </CardDescription>
         </div>
         <div className="flex">

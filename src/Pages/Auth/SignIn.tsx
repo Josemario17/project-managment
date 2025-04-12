@@ -12,13 +12,20 @@ import {
     FormMessage,
 } from "../../components/ui/form"
 import { Button } from "../../components/ui/button";
-import { toast } from "sonner";
 import { Input } from "../../components/ui/input";
 import FormLayout from "../../components/layouts/FormLayout";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FormSchemaSignIn } from "./utils/validations";
+import { getDataOfUser, signInUser } from "./utils/auth";
+import { toast } from "sonner";
+import { useState } from "react";
+import Cookies from 'js-cookie'
+import { handleLoginSuccess } from "./SignUp";
+import Spin from "../../components/Common/Spin";
 
 export function InputForm() {
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate(); 
     const form = useForm<z.infer<typeof FormSchemaSignIn>>({
         resolver: zodResolver(FormSchemaSignIn),
         defaultValues: {
@@ -27,9 +34,39 @@ export function InputForm() {
         },
     })
 
-    function onSubmit(data: z.infer<typeof FormSchemaSignIn>) {
-        toast(`Entrada com Sucesso!`)
+    async function authenticateUser(data: z.infer<typeof FormSchemaSignIn>) {
+        const token = await signInUser(data);
+        if (!token) throw new Error("Authentication failed");
+        return token;
     }
+
+    async function fetchUserData(token: string) {
+        const user = await getDataOfUser(token);
+        if (!user) throw new Error("Failed to fetch user data");
+        return user;
+    }
+
+    function persistUser(userData: any) {
+        userData ?
+        Cookies.set('user_data', JSON.stringify(userData), { expires: 7 })
+        : null
+    }
+
+    const onSubmit = async (data: z.infer<typeof FormSchemaSignIn>) => {
+        try {
+            setLoading(true);
+            const token = await authenticateUser(data);
+            const user = await fetchUserData(token);
+            persistUser(user);
+            toast.success("Login realizado com sucesso");
+            handleLoginSuccess(navigate, "/Dashboard");
+        } catch (error) {
+            toast.error("Falha no login");
+            console.log(error)
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <Form {...form}>
@@ -41,7 +78,7 @@ export function InputForm() {
                         <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                                <Input className="h-10" type="email" placeholder="example@mail.com" {...field} />
+                                <Input type="email" placeholder="example@mail.com" {...field} />
                             </FormControl>
                             <FormMessage className="text-red-700" />
                         </FormItem>
@@ -54,33 +91,35 @@ export function InputForm() {
                         <FormItem>
                             <FormLabel>Senha</FormLabel>
                             <FormControl>
-                                <Input className="h-10" type="password" placeholder="********" {...field} />
+                                <Input type="password" placeholder="********" {...field} />
                             </FormControl>
                             <FormMessage className="text-red-700" />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="bg-white text-black w-full" size={"lg"}>Entrar</Button>
+                <Button type="submit" className="bg-blue-950 text-white w-full h-12" size={"lg"}>{
+                    loading ? <Spin /> : "Entrar"
+                }</Button>
             </form>
         </Form>
     )
 }
 
-export const FormTitle = ({text}: {text: string}) => {
+export const FormTitle = ({ text }: { text: string }) => {
     return (
-        <h1 className="w-2/3 text-3xl font-bold text-center text-white">{text}</h1>
+        <h1 className="w-2/3 text-3xl font-bold text-center">{text}</h1>
     )
 }
 
-export const FormDescription = ({text}: {text: string}) => {
+export const FormDescription = ({ text }: { text: string }) => {
     return (
-        <p className="w-2/3 text-center text-sm text-gray-500">{text}</p>
+        <p className="w-2/3 text-center text-sm mb-6">{text}</p>
     )
 }
 
-export const FormLink = ({text, link, GoToText}: {text: string, link: string, GoToText: string}) => {
+export const FormLink = ({ text, link, GoToText }: { text: string, link: string, GoToText: string }) => {
     return (
-        <p className="text-sm text-gray-500">{text} <Link to={link} className="text-blue-100 hover:underline">{GoToText}</Link></p>
+        <p className="text-sm text-gray-500 mt-4">{text} <Link to={link} className="text-blue-800 hover:underline">{GoToText}</Link></p>
     )
 }
 

@@ -1,14 +1,12 @@
-import { SidebarProvider } from "../ui/sidebar";
-import { AppSidebar } from "./AppSidebar";
-
+import NavBar from "./NavBar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-      <SidebarProvider className="flex justify-around h-screen w-screen gap-20">
-        <AppSidebar />
-        <main className="w-auto my-20">
-          {children}
-        </main>
-      </SidebarProvider>
+    <div className="h-screen w-screen gap-20 ">
+     <NavBar />
+      <main className="w-3/4 mx-auto mb-20 mt-12">
+        {children}
+      </main>
+    </div>
   )
 }
