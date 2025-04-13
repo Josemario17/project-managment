@@ -4,13 +4,15 @@ import {
   CardHeader,
   CardTitle,
 } from '../../../components/ui/card'
+import { useUserStore } from '../../../store/UserStore';
 
 export function CardStats() {
+  const { name } = useUserStore().userData || { name: "" };
   return (
     <Card className='border-0 py-0 pb-0'>
       <CardHeader className="flex flex-col items-stretch space-y-0 border border-gray-200 p-0 sm:flex-row bg-white rounded-lg">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 py-5 sm:py-6">
-          <CardTitle>Seja Bem-vindo Nome</CardTitle>
+          <CardTitle>Seja Bem-vindo {name}</CardTitle>
           <CardDescription className='text-gray-600'>
             Esta é a estatistica dos seus projectos mais recentes
           </CardDescription>

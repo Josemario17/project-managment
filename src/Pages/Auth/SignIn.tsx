@@ -16,16 +16,18 @@ import { Input } from "../../components/ui/input";
 import FormLayout from "../../components/layouts/FormLayout";
 import { Link, useNavigate } from "react-router-dom";
 import { FormSchemaSignIn } from "./utils/validations";
-import { getDataOfUser, signInUser } from "./utils/auth";
+import { getDataOfUser, LoginWithGoogle, signInUser } from "./utils/auth";
 import { toast } from "sonner";
 import { useState } from "react";
 import Cookies from 'js-cookie'
 import { handleSuccess } from "./SignUp";
 import Spin from "../../components/Common/Spin";
+import GoogleButton from "../../components/Common/GoogleButton";
+import { useUserStore } from "../../store/UserStore";
 
 export function InputForm() {
     const [loading, setLoading] = useState(false)
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const form = useForm<z.infer<typeof FormSchemaSignIn>>({
         resolver: zodResolver(FormSchemaSignIn),
         defaultValues: {
@@ -43,13 +45,23 @@ export function InputForm() {
     async function fetchUserData(token: string) {
         const user = await getDataOfUser(token);
         if (!user) throw new Error("Failed to fetch user data");
-        return user;
+        return {user};
     }
 
     function persistUser(userData: any) {
-        userData ?
-        Cookies.set('user_data', JSON.stringify(userData), { expires: 7 })
-        : null
+        if(!userData) return;
+        Cookies.set("user_data", JSON.stringify(userData), { expires: 7 });
+        useUserStore.getState().setUserData(userData.user);
+    }
+
+    function successHandler() {
+        toast.success("Login realizado com sucesso");
+        handleSuccess(navigate, "/Dashboard");
+    }
+
+    function handleError(error: any) {
+        toast.error("Falha no login");
+        console.log(error);
     }
 
     const onSubmit = async (data: z.infer<typeof FormSchemaSignIn>) => {
@@ -58,15 +70,27 @@ export function InputForm() {
             const token = await authenticateUser(data);
             const user = await fetchUserData(token);
             persistUser(user);
-            toast.success("Login realizado com sucesso");
-            handleSuccess(navigate, "/Dashboard");
+            successHandler();
         } catch (error) {
-            toast.error("Falha no login");
-            console.log(error)
+            handleError(error);
         } finally {
             setLoading(false);
         }
     };
+
+    const GoogleSubmit = async () => {
+        try {
+            setLoading(true);
+            const token = await LoginWithGoogle();
+            const user = await fetchUserData(token);
+            persistUser(user);
+            successHandler();
+        } catch (error) {
+            handleError(error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <Form {...form}>
@@ -100,6 +124,7 @@ export function InputForm() {
                 <Button type="submit" className="bg-blue-950 text-white w-full h-12" size={"lg"}>{
                     loading ? <Spin /> : "Entrar"
                 }</Button>
+                <GoogleButton handleExecute={GoogleSubmit} Text="Login com Google" />
             </form>
         </Form>
     )

@@ -45,7 +45,6 @@ import {
 import { z } from "zod"
 import { Badge } from "../../ui/badge"
 import { Button } from "../../ui/button"
-import { Label } from "../../ui/label"
 import {
     Select,
     SelectContent,
@@ -79,14 +78,18 @@ import { Input } from "../../ui/input"
 import { Link } from "react-router-dom"
 
 export const schema = z.object({
-    id: z.number(),
-    description: z.string(),
-    Owner: z.string(),
-    EndTime: z.string(),
-    Status: z.string(),
+    id: z.string(),
+    title: z.string(),
+    host: z.object({
+        name: z.string(),
+        email: z.string()
+    }),
+    startedAt: z.string(),
+    endedAt: z.string(),
+    status: z.enum(["completed", "in_progress", "delayed"]),
 })
 
-const TransformTIme = (time: string) => {
+export const TransformTIme = (time: string) => {
     const date = new Date(time)
     return date.toLocaleDateString("pt-PT", {
         year: "numeric",
@@ -97,7 +100,6 @@ const TransformTIme = (time: string) => {
 
 export type TaskItem = z.infer<typeof schema>;
 
-// Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
     const { attributes, listeners } = useSortable({
         id,
@@ -117,31 +119,30 @@ function DragHandle({ id }: { id: number }) {
     )
 }
 
-// Table Cell Viewer Component
 function TableCellViewer({ item }: { item: TaskItem }) {
     return (
         <Sheet>
             <SheetTrigger asChild>
                 <Button variant="link" className="w-fit px-0 text-left text-foreground">
-                    {item.description}
+                    {item.title}
                 </Button>
             </SheetTrigger>
             <SheetContent side="right" className="flex flex-col">
                 <SheetHeader className="gap-1">
-                    <SheetTitle>{item.description}</SheetTitle>
+                    <SheetTitle>{item.title}</SheetTitle>
                     <SheetDescription>
                         Showing details for this task
                     </SheetDescription>
                 </SheetHeader>
                 <div className="py-4">
                     <div className="mb-2">
-                        <span className="font-semibold">Responsável:</span> {item.Owner}
+                        <span className="font-semibold">Responsável:</span> {item.host.name}
                     </div>
                     <div className="mb-2">
-                        <span className="font-semibold">Prazo:</span> {item.EndTime}
+                        <span className="font-semibold">Prazo:</span> {item.endedAt}
                     </div>
                     <div className="mb-2">
-                        <span className="font-semibold">Estado:</span> {item.Status}
+                        <span className="font-semibold">Estado:</span> {item.status}
                     </div>
                 </div>
                 <SheetFooter className="mt-auto flex gap-2 sm:flex-col sm:space-x-0">
@@ -164,8 +165,8 @@ const columns: ColumnDef<TaskItem>[] = [
         cell: ({ row }) => <DragHandle id={row.original.id} />,
     },
     {
-        accessorKey: "description",
-        header: "Descrição",
+        accessorKey: "title",
+        header: "Titulo",
         cell: ({ row }) => (
             <div className="w-32">
                 <TableCellViewer item={row.original} />
@@ -173,36 +174,49 @@ const columns: ColumnDef<TaskItem>[] = [
         ),
     },
     {
-        accessorKey: "Owner",
+        accessorKey: "host",
         header: "Responsavel",
         cell: ({ row }) => (
             <div className="w-32">
                 <span className="py-1 text-muted-foreground">
-                    {row.original.Owner}
+                    {row.original.host.name}
                 </span>
             </div>
         ),
     },
     {
-        accessorKey: "EndTime",
-        header: "Prazo",
+        accessorKey: "startedAt",
+        header: "Inicio",
         cell: ({ row }) => (
             <div className="w-32">
                 <Badge variant="outline" className="px-6 py-2 my-3 text-muted-foreground border-gray-300">
-                    {TransformTIme(row.original.EndTime)}
+                    {row.original.startedAt}
                 </Badge>
             </div>
         ),
     },
     {
-        accessorKey: "Status",
+        accessorKey: "endedAt",
+        header: "Prazo",
+        cell: ({ row }) => (
+            <div className="w-32">
+                <Badge variant="outline" className="px-6 py-2 my-3 text-muted-foreground border-gray-300">
+                    {row.original.endedAt}
+                </Badge>
+            </div>
+        ),
+    },
+    {
+        accessorKey: "status",
         header: "Estado",
         cell: ({ row }) => (
             <Badge
-                className={`flex gap-1 py-1.5 my-3 text-muted-foreground [&_svg]:size-3 rounded-full ${row.original.Status === "Concluido" ? "bg-green-300 px-6  text-green-900" : "border-white"
+                className={`flex gap-1 py-1.5 my-3 text-muted-foreground [&_svg]:size-3 rounded-full ${
+                    row.original.status === "completed" ? "bg-green-300 px-6  text-green-900" :
+                    row.original.status === "delayed" ? "bg-red-300 px-6  text-red-900" : "border-white"
                     }`}
             >
-                {row.original.Status}
+                {row.original.status === "completed" ? "Concluido" : row.original.status === "delayed" ? "Atrasado" : row.original.status === "in_progress" ? "Em Progresso" : "Desconhecido"}
             </Badge>
         ),
     },
@@ -285,7 +299,7 @@ export function DataTable({
             columnFilters,
             pagination,
         },
-        getRowId: (row) => row.id.toString(),
+        getRowId: (row) => row?.id?.toString(),
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
@@ -317,26 +331,23 @@ export function DataTable({
             className="flex w-full flex-col justify-start gap-6 mt-4"
         >
             <div className="flex items-center justify-between">
-                <Label htmlFor="view-selector" className="sr-only">
-                    View
-                </Label>
                 <div className="flex flex-row justify-between items-center gap-2 w-full">
                     <Input
                         id="search"
                         placeholder="Pesquisar..."
                         className="w-auto grow bg-white"
                     />
+
                     <Select
-                        value="option1"
                         onValueChange={(value) => console.log(value)}
                     >
                         <SelectTrigger className="w-80 bg-white" id="view-selector" size="default">
-                            <SelectValue placeholder="Select an option" />
+                            <SelectValue placeholder="Selecione o Estado" />
                         </SelectTrigger>
-                        <SelectContent className="bg-blue-950 text-white">
-                            <SelectItem value="option1">Concluidos</SelectItem>
-                            <SelectItem value="option2">Em Progresso</SelectItem>
-                            <SelectItem value="option3">Expirados</SelectItem>
+                        <SelectContent className="bg-white border border-gray-300">
+                            <SelectItem value="completed">Concluidos</SelectItem>
+                            <SelectItem value="in_progress">Em Progresso</SelectItem>
+                            <SelectItem value="delayed">Expirados</SelectItem>
                         </SelectContent>
                     </Select>
                     <Link to={'/projects/create'} className="bg-blue-950 text-white w-1/4 h-12 rounded-md flex items-center justify-center gap-2">
@@ -360,11 +371,11 @@ export function DataTable({
                         <Table>
                             <TableHeader className="sticky top-0 z-10 bg-muted">
                                 {table.getHeaderGroups().map((headerGroup) => (
-                                    <TableRow key={headerGroup.id} className="bg-gray-200">
+                                    <TableRow key={headerGroup.id} className="bg-slate-200">
                                         {headerGroup.headers.map((header) => {
                                             return (
-                                                <TableHead key={header.id} colSpan={header.colSpan} className="py-5" 
-                                                
+                                                <TableHead key={header.id} colSpan={header.colSpan} className="py-5"
+
                                                 >
                                                     {header.isPlaceholder
                                                         ? null

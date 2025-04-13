@@ -3,11 +3,12 @@
 import { useState } from "react"
 import { Plus, MoreHorizontal, Calendar } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
-import { Button } from "../../components/ui/button"
+import { Button } from "../ui/button"
 import { Input } from "../../components/ui/input"
 import { Badge } from "../../components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar"
 import type { ColumnData, TaskData } from "../../lib/types"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
+import TaskDetailModal from "./taskModal"
 
 interface TaskColumnProps {
   column: ColumnData
@@ -37,46 +38,30 @@ export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColu
     setIsAddingTask(false)
   }
 
-  const handleTaskClick = (task: TaskData) => {
-  }
-
-  const handleTaskUpdate = (updatedTask: TaskData) => {
-    onUpdateTask(column.id, updatedTask.id, updatedTask)
-  }
-
-  const getStatusColor = (status: string) => {
+  const getPriorityBadge = (status: string) => {
     switch (status) {
-      case "pending":
-        return "bg-gray-200"
-      case "in_progress":
-        return "bg-blue-200"
       case "completed":
-        return "bg-green-200"
-      case "delayed":
-        return "bg-red-200"
-      default:
-        return "bg-gray-200"
-    }
-  }
-
-  const getPriorityBadge = (priority: string) => {
-    switch (priority) {
-      case "low":
         return (
-          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-            Baixa
+          <Badge variant="outline" className="bg-blue-50 text-green-700 border-green-200">
+            Concluida
           </Badge>
         )
-      case "medium":
+      case "in_progress":
         return (
           <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            Média
+            Em Progresso
           </Badge>
         )
-      case "high":
+      case "delayed":
         return (
           <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-            Alta
+            Atrasada
+          </Badge>
+        )
+      case "pending":
+        return (
+          <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+            Pendente
           </Badge>
         )
       default:
@@ -91,112 +76,96 @@ export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColu
   }
 
   return (
-    <div className="w-72 flex-shrink-0">
-      <Card className="bg-gray-100/10 backdrop-blur-sm border-0 shadow-md">
-        <CardHeader className="p-3 pb-0">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-white text-lg font-medium">{column.title}</CardTitle>
-            <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-3 space-y-2">
-          {column.tasks.map((task) => (
-            <Card
-              key={task.id}
-              className="bg-gray-800 text-white p-3 shadow cursor-pointer hover:bg-gray-700 transition-colors"
-              onClick={() => handleTaskClick(task)}
-            >
-              <CardContent className="p-0 space-y-2">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-medium">{task.title}</h3>
-                  <div className={`w-2 h-2 rounded-full ${getStatusColor(task.status)}`}></div>
-                </div>
-
-                {task.description && <p className="text-xs text-gray-300 line-clamp-2">{task.description}</p>}
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-1">
-                    {task.assignedTo && task.assignedTo.length > 0 && (
-                      <div className="flex -space-x-2">
-                        {task.assignedTo.slice(0, 2).map((userId, index) => {
-                          const user = mockUsers?.find((u) => u.id === userId)
-                          if (!user) return null
-
-                          return (
-                            <Avatar key={index} className="h-6 w-6 border-2 border-gray-800">
-                              <AvatarImage src={user.avatar} alt={user.name} />
-                              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                          )
-                        })}
-                        {task.assignedTo.length > 2 && (
-                          <div className="flex items-center justify-center h-6 w-6 rounded-full bg-gray-600 border-2 border-gray-800 text-xs">
-                            +{task.assignedTo.length - 2}
-                          </div>
-                        )}
-                      </div>
-                    )}
+    <>
+      <div className="w-96 flex-shrink-0">
+        <Card className="bg-blue-950 max-h-[450px] overflow-y-auto backdrop-blur-sm border-0 shadow-md px-4">
+          <CardHeader className="p-3 pb-0">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-white text-lg font-medium">{column.title}</CardTitle>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-white/70 hover:text-white hover:bg-white/10">
+                <DropdownMenu>
+                  <DropdownMenuTrigger> <MoreHorizontal className="h-4 w-4" /></DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48 bg-white poppins-regular">
+                    <DropdownMenuLabel>Opções da Lista</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Trocar Cor</DropdownMenuItem>
+                    <DropdownMenuItem>Editar Nome</DropdownMenuItem>
+                    <DropdownMenuItem className="focus:bg-red-600 focus:text-white text-red-600">Excluir Lista</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="p-3 space-y-2">
+            {column.tasks.map((task) => (
+              <Card
+                key={task.id}
+                className="bg-gray-800 text-white p-3 shadow cursor-pointer hover:bg-gray-700 transition-colors"
+              >
+                <CardContent className="p-0 space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div className="w-2/3">
+                      <h3 className="font-medium">{task.title}</h3>
+                      <p className="max-w-70 truncate">A nova tarefa deve ter 14h para ser concluida</p>
+                    </div>
+                    <Button onClick={() => console.log('Button clicked!')}>
+                      <MoreHorizontal />
+                    </Button>
                   </div>
-
-                  <div className="flex items-center space-x-2">
-                    {task.dueDate && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
                       <div className="flex items-center text-xs text-gray-300">
                         <Calendar className="h-3 w-3 mr-1" />
-                        {formatDate(task.dueDate)}
+                        12/12/2023
                       </div>
-                    )}
-                    {getPriorityBadge(task.priority)}
+                      {getPriorityBadge(task.status)}
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-
-          {isAddingTask ? (
-            <div className="space-y-2">
-              <Card className="bg-gray-800 p-2">
-                <CardContent className="p-0">
-                  <Input
-                    value={newTaskTitle}
-                    onChange={(e) => setNewTaskTitle(e.target.value)}
-                    placeholder="Digite o título do cartão..."
-                    className="bg-gray-700 border-0 text-white placeholder:text-gray-400"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && newTaskTitle.trim()) {
-                        handleAddTask()
-                      }
-                    }}
-                  />
                 </CardContent>
               </Card>
-              <div className="flex items-center space-x-2">
-                <Button size="sm" onClick={handleAddTask} className="bg-blue-600 hover:bg-blue-700 text-white">
-                  Adicionar cartão
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setIsAddingTask(false)}
-                  className="text-white hover:bg-white/10"
-                >
-                  Cancelar
-                </Button>
+            ))}
+
+            {isAddingTask ? (
+              <div className="space-y-2">
+                <Input
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  placeholder="Digite o título do cartão..."
+                  className=" text-white bg-gray-800 placeholder:text-gray-400 h-12"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && newTaskTitle.trim()) {
+                      handleAddTask()
+                    }
+                  }}
+                />
+                <div className="flex items-center space-x-2">
+                  <Button size="lg" onClick={handleAddTask} className="bg-white hover:bg-slate-300 text-blue-950">
+                    Nova Tarefa
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => setIsAddingTask(false)}
+                    className="text-white hover:bg-white/10 h-12"
+                  >
+                    Cancelar
+                  </Button>
+                </div>
               </div>
-            </div>
-          ) : (
-            <Button
-              variant="ghost"
-              className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
-              onClick={() => setIsAddingTask(true)}
-            >
-              <Plus className="h-4 w-4 mr-2" /> Adicionar um cartão
-            </Button>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+            ) : (
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-white/70 hover:text-white hover:bg-white/10"
+                onClick={() => setIsAddingTask(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" /> Adicionar Tarefa
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+
+      </div>
+
+      <TaskDetailModal isOpen={false} onClose={() => { }} /> </>
   )
 }

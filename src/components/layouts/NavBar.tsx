@@ -5,20 +5,22 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "../ui/navigation-menu";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useUserStore } from "../../store/UserStore";
+import Cookies from "js-cookie";
 
 const Menubar = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="flex gap-4">
         <NavigationMenuItem>
-          <NavLink 
-            to="/Dashboard" 
-            className={({ isActive }) => 
-              `px-3 py-2 rounded-md transition-colors ${
-                isActive 
-                  ? "bg-blue-950 text-white" 
-                  : " hover:bg-blue-900/50"
+          <NavLink
+            to="/Dashboard"
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-md transition-colors ${isActive
+                ? "bg-blue-950 text-white"
+                : " hover:bg-blue-900/50"
               }`
             }
           >
@@ -26,13 +28,12 @@ const Menubar = () => {
           </NavLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavLink 
-            to="/projects" 
-            className={({ isActive }) => 
-              `px-3 py-2 rounded-md transition-colors ${
-                isActive 
-                  ? "bg-blue-950 text-white" 
-                  : "hover:bg-blue-900/50"
+          <NavLink
+            to="/projects"
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-md transition-colors ${isActive
+                ? "bg-blue-950 text-white"
+                : "hover:bg-blue-900/50"
               }`
             }
           >
@@ -40,13 +41,12 @@ const Menubar = () => {
           </NavLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavLink 
-            to="/tasks" 
-            className={({ isActive }) => 
-              `px-3 py-2 rounded-md transition-colors ${
-                isActive 
-                  ? "bg-blue-950 text-white" 
-                  : "hover:bg-blue-900/50"
+          <NavLink
+            to="/tasks"
+            className={({ isActive }) =>
+              `px-3 py-2 rounded-md transition-colors ${isActive
+                ? "bg-blue-950 text-white"
+                : "hover:bg-blue-900/50"
               }`
             }
           >
@@ -57,6 +57,40 @@ const Menubar = () => {
     </NavigationMenu>
   );
 };
+
+const UserMenu = () => {
+  const navigate = useNavigate()
+  const { name } = useUserStore().userData || { name: "" };
+
+  function deletePersistedData() {
+    Cookies.remove("user_data")
+  }
+
+  function handleLogout() {
+    deletePersistedData();
+    navigate("/SignIn")
+  }
+
+  return (
+    <div className="flex items-center space-x-2">
+      <div className="bg-blue-950 flex px-3 py-1.5 rounded-md items-center justify-center text-white border-blue-950">
+        <Users className="h-4 w-4 mr-2" />
+        {name}
+      </div>
+      <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
+        <Bell></Bell>
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 p-2.5 rounded-md">
+          <MoreHorizontal className="h-4 w-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-white border-gray-300">
+          <DropdownMenuItem onClick={handleLogout} className="focus:bg-white focus:text-blue-950">Terminar Sessão</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+}
 
 
 export default function NavBar() {
@@ -69,18 +103,7 @@ export default function NavBar() {
           </div>
         </div>
         <Menubar />
-        <div className="flex items-center space-x-2">
-          <div className="bg-blue-950 flex px-3 py-1.5 rounded-md items-center justify-center text-white border-blue-950">
-            <Users className="h-4 w-4 mr-2" />
-            José Dos Santos
-          </div>
-          <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
-            <Bell></Bell>
-          </Button>
-          <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </div>
+        <UserMenu />
       </header>
     </div>
   )
