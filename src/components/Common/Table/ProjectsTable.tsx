@@ -222,14 +222,11 @@ const columns: ColumnDef<TaskItem>[] = [
     },
     {
         id: "actions",
-        cell: () => (
+        cell: ({ row }) => (
             <div className="flex space-x-2 items-center justify-center gap-1 ml-2">
-                <Link to="/projects/new" className="p-1.5 rounded-lg bg-orange-400">
+                <Link to={`/projects/${row.original.id}`} className="p-1.5 rounded-lg bg-orange-400">
                     <Eye size={20} />
                 </Link >
-                <button className="p-1.5 rounded-lg bg-orange-400">
-                    <Pencil size={20} />
-                </button>
                 <button className="p-1.5 rounded-lg bg-red-600">
                     <Trash size={20} />
                 </button>

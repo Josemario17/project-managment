@@ -110,7 +110,7 @@ export default function SignUp() {
             <FormTitle text='Criar uma Conta'></FormTitle>
             <FormDescription text='Começe com uma nova conta'></FormDescription>
             <InputForm></InputForm>
-            <FormLink text='Já tem uma conta?' link='/' GoToText='Entrar'></FormLink>
+            <FormLink text='Já tem uma conta?' link='/SignIn' GoToText='Entrar'></FormLink>
         </FormLayout>
     )
 }

@@ -1,6 +1,6 @@
 // vamos criar um hook para consumir os dados com sdk do firebase
 
-import { get, ref } from "firebase/database"
+import { get, onValue, ref } from "firebase/database"
 import { db } from "../Config/conection"
 
 

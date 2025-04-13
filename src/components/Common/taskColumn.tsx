@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Plus, MoreHorizontal, Calendar } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card"
 import { Button } from "../ui/button"
@@ -9,70 +9,105 @@ import { Badge } from "../../components/ui/badge"
 import type { ColumnData, TaskData } from "../../lib/types"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu"
 import TaskDetailModal from "./taskModal"
+import { addTask, getTasksInDb } from "../../api/tasks"
+import { GetTaskInner } from "../../hooks/getProjects"
+import { useParams } from "react-router-dom"
+import { v4 as uuid4 } from 'uuid'
 
 interface TaskColumnProps {
   column: ColumnData
-  onAddTask: (columnId: string, task: Partial<TaskData>) => void
-  onUpdateTask: (columnId: string, taskId: string, updatedTask: TaskData) => void
 }
 
-export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColumnProps) {
+export const getPriorityBadge = (status: string) => {
+  switch (status) {
+    case "completed":
+      return (
+        <Badge variant="outline" className="bg-blue-50 text-green-700 border-green-200">
+          Concluida
+        </Badge>
+      )
+    case "in_progress":
+      return (
+        <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
+          Em Progresso
+        </Badge>
+      )
+    case "delayed":
+      return (
+        <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+          Atrasada
+        </Badge>
+      )
+    case "pending":
+      return (
+        <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+          Pendente
+        </Badge>
+      )
+    default:
+      return null
+  }
+}
+
+export default function TaskColumn({ column }: TaskColumnProps) {
+  const { id } = useParams<string>()
+  const { taskData } = GetTaskInner(id || '', column.id)
+  const [tasks, setTasks] = useState<any>([])
   const [isAddingTask, setIsAddingTask] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState("")
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [selectedItem, setSelectedItem] = useState('')
+
+  useEffect(() => {
+    const getTasksFunc = async () => {
+      const Data = await getTasksInDb(id || '', column.id)
+      if (Data !== undefined && Data !== null) {
+        setTasks(Object.values(Data) || []);
+      }
+    }
+    getTasksFunc();
+  }, [taskData, selectedItem, isModalOpen])
+
+  const organizeData = () => {
+    const idGenerated = uuid4()
+    const newTask: TaskData = {
+      id: idGenerated,
+      title: newTaskTitle,
+      description: "",
+      status: "pending",
+      priority: "medium",
+      comments: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      endedAt: '',
+    }
+    return newTask
+  }
 
   const handleAddTask = () => {
     if (newTaskTitle.trim()) {
-      const newTask: Partial<TaskData> = {
-        title: newTaskTitle,
-        description: "",
-        status: "pending",
-        priority: "medium",
-        comments: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      }
-
-      onAddTask(column.id, newTask)
+      const Data = organizeData()
+      addTask(id || '', column.id, Data)
+      setTasks([...tasks, Data])
       setNewTaskTitle("")
     }
     setIsAddingTask(false)
-  }
-
-  const getPriorityBadge = (status: string) => {
-    switch (status) {
-      case "completed":
-        return (
-          <Badge variant="outline" className="bg-blue-50 text-green-700 border-green-200">
-            Concluida
-          </Badge>
-        )
-      case "in_progress":
-        return (
-          <Badge variant="outline" className="bg-yellow-50 text-yellow-700 border-yellow-200">
-            Em Progresso
-          </Badge>
-        )
-      case "delayed":
-        return (
-          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
-            Atrasada
-          </Badge>
-        )
-      case "pending":
-        return (
-          <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
-            Pendente
-          </Badge>
-        )
-      default:
-        return null
-    }
   }
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return null
     const date = new Date(dateString)
     return `${date.getDate()}/${date.getMonth() + 1}`
+  }
+
+  const OpenModal = (id: string) => {
+    setIsModalOpen(!isModalOpen)
+    setSelectedItem(id)
+  }
+
+  const CloseModal = () => {
+    setIsModalOpen(!isModalOpen)
+    setSelectedItem('')
   }
 
   return (
@@ -97,16 +132,17 @@ export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColu
             </div>
           </CardHeader>
           <CardContent className="p-3 space-y-2">
-            {column.tasks.map((task) => (
+            {tasks?.map((task: any) => (
               <Card
                 key={task.id}
+                onClick={() => OpenModal(task.id)}
                 className="bg-gray-800 text-white p-3 shadow cursor-pointer hover:bg-gray-700 transition-colors"
               >
                 <CardContent className="p-0 space-y-2">
                   <div className="flex items-start justify-between">
                     <div className="w-2/3">
                       <h3 className="font-medium">{task.title}</h3>
-                      <p className="max-w-70 truncate">A nova tarefa deve ter 14h para ser concluida</p>
+                      <p className="max-w-70 truncate">{task.description}</p>
                     </div>
                     <Button onClick={() => console.log('Button clicked!')}>
                       <MoreHorizontal />
@@ -116,7 +152,7 @@ export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColu
                     <div className="flex items-center space-x-2">
                       <div className="flex items-center text-xs text-gray-300">
                         <Calendar className="h-3 w-3 mr-1" />
-                        12/12/2023
+                        {formatDate(task.endedAt) || formatDate(task.updatedAt)}
                       </div>
                       {getPriorityBadge(task.status)}
                     </div>
@@ -163,9 +199,10 @@ export default function TaskColumn({ column, onAddTask, onUpdateTask }: TaskColu
             )}
           </CardContent>
         </Card>
-
       </div>
-
-      <TaskDetailModal isOpen={false} onClose={() => { }} /> </>
+      {
+        isModalOpen && <TaskDetailModal taskListId={column.id} taskId={selectedItem} onClose={CloseModal} />
+      }
+    </>
   )
 }

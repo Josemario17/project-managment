@@ -9,10 +9,12 @@ import {
   BreadcrumbSeparator,
 } from "../../../components/ui/breadcrumb"
 import { useParams } from "react-router-dom"
+import { GetProjects } from "../../../hooks/getProjects"
 
 export function NavigationHistory() {
-  const { id } = useParams<string>()
-
+    const { id } = useParams<string>()
+    const { projectData } = GetProjects(id)
+    const uniqueItem = 0
   return (
     <Breadcrumb className="mb-4">
       <BreadcrumbList>
@@ -23,7 +25,7 @@ export function NavigationHistory() {
           <Slash />
         </BreadcrumbSeparator>
         <BreadcrumbItem>
-        <BreadcrumbLink href={`/projects/${id}`}>Project {id}</BreadcrumbLink>
+        <BreadcrumbLink href={`/projects/${id}`}>Projecto {projectData[uniqueItem]?.title}</BreadcrumbLink>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

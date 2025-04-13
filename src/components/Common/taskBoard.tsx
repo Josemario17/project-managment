@@ -1,78 +1,47 @@
-import { useState } from "react"
-import TaskColumn from "./taskColumn" 
-import type { ColumnData, Notification, TaskData } from "../../lib/types"
+import { useEffect, useState } from "react"
+import TaskColumn from "./taskColumn"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import TaskDetailModal from "./taskModal"
+import { useParams } from "react-router-dom"
+import { addTaskList } from "../../api/tasks"
+import { GetTaskList } from "../../hooks/getProjects"
 
 export default function TaskBoard() {
-  const [columns, setColumns] = useState<ColumnData[]>([])
+  const { id } = useParams<string>()
+  const { loading, taskListData } = GetTaskList(id || '')
+  const [column, setColumns] = useState<any>([])
   const [isAddingColumn, setIsAddingColumn] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState("")
 
-  const addTask = (columnId: string, taskData: Partial<TaskData>) => {
-    if (!taskData.title?.trim()) return
+  useEffect(()=>{
+    setColumns(taskListData || [])
+  }, [taskListData])
 
-    const newTask: TaskData = {
-      id: Date.now().toString(),
-      title: taskData.title,
-      description: taskData.description || "",
-      status: taskData.status || "pending",
-      priority: taskData.priority || "medium",
-      dueDate: taskData.dueDate,
-      assignedTo: taskData.assignedTo || [],
-      comments: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+  const inputValidation = () => {
+    return newColumnTitle.trim() === ""
+  }
+
+  const submitTaskList = () => {
+    if (inputValidation()) return
+    else {
+      if (id) {
+        const idTask = addTaskList(id, newColumnTitle)
+        setColumns([...column, { title: newColumnTitle, id: idTask, tasks: [] }])
+        setNewColumnTitle('')
+      }
     }
 
-    setColumns(
-      columns?.map((column) => {
-        if (column.id === columnId) {
-          return {
-            ...column,
-            tasks: [...column.tasks, newTask],
-          }
-        }
-        return column
-      }),
-    )
   }
 
-  const updateTask = (columnId: string, taskId: string, updatedTask: TaskData) => {
-    setColumns(
-      columns?.map((column) => {
-        if (column.id === columnId) {
-          return {
-            ...column,
-            tasks: column.tasks.map((task) => (task.id === taskId ? updatedTask : task)),
-          }
-        }
-        return column
-      }),
-    )
-  }
-
-  const addColumn = () => {
-    if (!newColumnTitle.trim()) return
-
-    const newColumn: ColumnData = {
-      id: Date.now().toString(),
-      title: newColumnTitle,
-      tasks: [],
-    }
-
-    setColumns(columns ? [...columns, newColumn] : [newColumn])
-    setNewColumnTitle("")
-    setIsAddingColumn(false)
-  }
-  
   return (
     <div className="flex-1 overflow-x-auto p-8 border border-gray-300 rounded-md w-full bg-slate-200">
       <div className="flex space-x-4">
-        {columns.map((column) => (
-          <TaskColumn key={column.id} column={column} onAddTask={addTask} onUpdateTask={updateTask} />
-        ))}
+        {
+          !loading && 
+          column?.map((column: any) => (
+            <TaskColumn key={column.id} column={column} />
+          ))
+        }
         <div className="w-72 flex-shrink-0">
           {isAddingColumn ? (
             <div className="bg-gray-100 backdrop-blur-sm rounded-md p-3 shadow-md">
@@ -84,7 +53,7 @@ export default function TaskBoard() {
                 autoFocus
               />
               <div className="flex space-x-2 mt-4">
-                <Button onClick={addColumn} className="bg-blue-950 text-white">
+                <Button onClick={submitTaskList} className="bg-blue-950 text-white">
                   Adicionar lista
                 </Button>
                 <button

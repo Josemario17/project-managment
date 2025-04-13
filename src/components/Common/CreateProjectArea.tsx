@@ -69,7 +69,6 @@ const FormAddProject = () => {
 
     const removeMembersInList = (member: any) => {
         setSelectedMembers(prevState => prevState.filter((m: any) => m.id !== member.id));
-        console.log(member)
         setMembers(prevState => ([...prevState, member]));
     }
 
@@ -115,7 +114,6 @@ const FormAddProject = () => {
         const data = organizeData()
         try {
             addProjectInServer(data)
-            console.log(data)
             handleSuccess()
             NavigateTo()
         }
@@ -220,7 +218,7 @@ export const LeftSide = () => {
             from: TransformTIme(date?.from), 
             to: TransformTIme(date?.to)
         })
-    }, [date]);
+    }, [date, setNewDate]);
     return (
         <Calendar
             locale={pt}

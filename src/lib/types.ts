@@ -6,17 +6,18 @@ export interface User {
   }
   
   export interface Comment {
-    id: string
+    id: string,
     userId: string
+    name: string
     content: string
     createdAt: string
   }
   
   export interface TaskData {
-    id: string
+    id?: string;
     title: string
     description?: string
-    dueDate?: string
+    endedAt?: string
     status: "pending" | "in_progress" | "completed" | "delayed"
     priority: "low" | "medium" | "high"
     assignedTo?: string[]
@@ -34,23 +35,10 @@ export interface User {
   
   export interface ProjectMember {
     userId: string
-    role: "owner" | "admin" | "editor" | "viewer"
+    role: "owner" | "editor" | "viewer"
     joinedAt: string
   }
-  
-  export interface Project {
-    id: string
-    name: string
-    description: string
-    status: "Ativo" | "Concluído" | "Em pausa" | "Arquivado"
-    startDate?: string
-    endDate?: string
-    members: ProjectMember[]
-    favorite: boolean
-    createdAt: string
-    updatedAt: string
-  }
-  
+ 
   export interface Notification {
     id: string
     userId: string
@@ -60,5 +48,15 @@ export interface User {
     message: string
     read: boolean
     createdAt: string
+    }
+    
+  export interface projectType {
+    id: string;
+    title: string;
+    description: string;
+    host: { name: string; };
+    members: any[];
+    startedAt: string;
+    endedAt: string;
+    status: 'in_progress' | 'completed' | 'delayed';
   }
-  

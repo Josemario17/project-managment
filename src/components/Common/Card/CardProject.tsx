@@ -9,9 +9,34 @@ import {
     CardTitle,
 } from "../../ui/card"
 import { Link } from "react-router-dom"
-import DashboardTableProjects from "../Table/DashboardTable"
+import DashboardTableProjects, { projectType } from "../Table/DashboardTable"
+import { GetProjects } from "../../../hooks/getProjects"
+
 
 export function CardProject() {
+    const { projectData } = GetProjects()
+    const calculateTotalMembers = (projects: projectType[] = []) => {
+        return projects.filter((item: projectType) => item.members).length || 0;
+    };
+    const parseDateString = (dateStr: string) => {
+        const [day, month, year] = dateStr.split('/').map(Number);
+        return new Date(year, month - 1, day);
+    };
+
+    const calculateDurationInDays = (startDateStr: string, endDateStr: string) => {
+        const startDate = parseDateString(startDateStr);
+        const endDate = parseDateString(endDateStr);
+        return (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+    };
+
+    const calculateAverageDuration = (projects: projectType[] = []) => {
+        if (!projects || projects.length === 0) return 0;
+        
+        const totalDays = projects.reduce((acc, project) => 
+            acc + calculateDurationInDays(project.startedAt, project.endedAt), 0);
+            
+        return Math.round(totalDays / projects.length);
+    };
     return (
         <div className="grid grid-cols-2 gap-4 pt-4">
             <DashboardTableProjects />
@@ -19,12 +44,12 @@ export function CardProject() {
                 <CardHeader className="relative">
                     <CardDescription>Membros em Projectos</CardDescription>
                     <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-                        32
+                        {calculateTotalMembers(projectData)}
                     </CardTitle>
                     <div className="absolute right-4 top-4">
-                        <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-                            <ArrowUpIcon className="size-3" />
-                            +4
+                        <Badge variant="outline" className="flex gap-1 rounded-lg text-xs border-green-600 text-green-600">
+                            <ArrowDownIcon className="size-3 text-green-600" />
+                            +1
                         </Badge>
                     </div>
                 </CardHeader>
@@ -32,21 +57,15 @@ export function CardProject() {
                     <div className="line-clamp-1 flex gap-2 font-medium">
                         Equipe expandindo <UsersIcon className="size-4" />
                     </div>
-                    <div className="text-muted-foreground text-gray-500">4 novos colaboradores</div>
+                    <div className="text-muted-foreground text-gray-500">{calculateTotalMembers(projectData)} novos colaboradores</div>
                 </CardFooter>
             </Card>
             <Card className="@container/card col-span-2">
                 <CardHeader className="relative">
                     <CardDescription>Prazo Médio (dias)</CardDescription>
                     <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
-                        14.5
+                        {calculateAverageDuration(projectData)}
                     </CardTitle>
-                    <div className="absolute right-4 top-4">
-                        <Badge variant="outline" className="flex gap-1 rounded-lg text-xs">
-                            <ArrowDownIcon className="size-3" />
-                            -2.3
-                        </Badge>
-                    </div>
                 </CardHeader>
                 <CardFooter className="flex-col items-start gap-1 text-sm">
                     <div className="line-clamp-1 flex gap-2 font-medium">

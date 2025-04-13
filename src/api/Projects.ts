@@ -2,22 +2,14 @@
 import { get, getDatabase, ref, set } from "firebase/database";
 import { v4 as uuid4 } from 'uuid'
 import { db } from "../Config/conection";
+import { projectType } from "../lib/types";
 
-export interface ProjectData {
-    title: string;
-    description: string;
-    host: string | {};
-    members: any[]; 
-    startedAt: string;
-    endedAt: string;
-    status: 'in_progress' | 'completed' | 'delayed';
-}
-
-export const addProjectInServer = (data: ProjectData) =>{
+export const addProjectInServer = (data: projectType) =>{
   const db = getDatabase();
+  const idGenerated = uuid4()
   try {
-    set(ref(db, 'projects/' + uuid4()), {
-      id: uuid4(),
+    set(ref(db, 'projects/' + idGenerated), {
+      id: idGenerated,
       title: data.title,
       description: data.description,
       host: data.host,
@@ -32,8 +24,9 @@ export const addProjectInServer = (data: ProjectData) =>{
     }
 }
 
-export const getProjects = async (projectId?: string) => {
+export const getProjectsInDb = async (projectId?: string) => {
     const useRef = ref(db, `projects/${projectId || ""}`)
     const snapshot = await get(useRef)
-    return snapshot.val()
+    const data = snapshot.val()
+    return data
 }

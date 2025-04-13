@@ -1,29 +1,50 @@
 import { AlarmClock, AlarmClockCheck } from "lucide-react";
 import TaskBoard from "../Common/taskBoard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { useParams } from "react-router-dom";
+import { GetProjects } from "../../hooks/getProjects";
+import { GetStatusPt } from "../Common/Table/DashboardTable";
+
+const classReturn = (text: 'in_progress' | 'completed' | 'delayed') =>
+    text === 'completed' ?
+        'border-green-500 text-green-500' :
+        text === 'delayed' ?
+            'border-red-500 text-red-500' :
+            'border-gray-500 text-gray-500'
+
+
 
 export const InfoProject = () => {
+    const { id } = useParams<string>()
+    const { projectData } = GetProjects(id)
+    const uniqueItem = 0
     return (
-        <div className="border border-gray-200 backdrop-blur-sm rounded-lg p-4 mb-4">
-            <h3 className="text-lg font-semibold">Nome do Projeto</h3>
-            <div className="w-full grid grid-cols-2 justify-between items-center">
-                <div>
-                    <p className="flex items-center gap-2 text-muted-foreground">
-                        <AlarmClock size={18} color="orange" />
-                        01/01/2023
-                    </p>
-                    <p className="flex items-center gap-2 text-muted-foreground">
-                        <AlarmClockCheck size={18} color="green" />
-                        01/02/2023
-                    </p>
-                </div>
-                <div className="w-auto flex justify-end">
-                    <p className="text-muted-foreground justify-center items-center rounded-md py-1 px-4 border border-orange-500 text-orange-500 w-auto flex">Em andamento</p>
+        <>
+            <h3 className="text-lg font-semibold p-4">{projectData[uniqueItem]?.title}</h3>
+            <div className="border border-gray-200 backdrop-blur-sm rounded-lg p-4">
+                <div className="w-full grid grid-cols-2 justify-between items-center">
+                    <div>
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                            <AlarmClock size={18} color="orange" />
+                            {projectData[uniqueItem]?.startedAt}
+                        </p>
+                        <p className="flex items-center gap-2 text-muted-foreground">
+                            <AlarmClockCheck size={18} color="green" />
+                            {projectData[uniqueItem]?.endedAt}
+                        </p>
+                    </div>
+                    <div className="w-auto flex justify-end">
+                        <p className={`text-muted-foreground justify-center items-center rounded-md py-1 px-4 border w-auto flex ${projectData[uniqueItem]?.status ? classReturn(projectData[uniqueItem]?.status) : ''}`}>
+                            {projectData[uniqueItem]?.status && GetStatusPt(projectData[uniqueItem]?.status)}
+                        </p>
+                    </div>
                 </div>
             </div>
-            <p className="text-muted-foreground pt-4">Descrição do projeto</p>
-            <p className="text-muted-foreground text-gray-500">Descrição do projeto</p>
-        </div>
+            <div className="rounded-lg p-4 mb-4">
+                <p className="text-muted-foreground">Descrição do projeto</p>
+                <p className="text-muted-foreground text-gray-500">{projectData[uniqueItem]?.description}</p>
+            </div>
+        </>
     )
 }
 
