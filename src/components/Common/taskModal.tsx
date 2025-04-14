@@ -17,12 +17,9 @@ import { toast } from "sonner"
 import { Comment, TaskData } from "../../lib/types"
 import { v4 as uuid4 } from 'uuid'
 import { Input } from "../ui/input"
-import { Header, MemberButton, MembersList } from "../layouts/MembersList"
-import { addProjectInServer, getProjectsInDb } from "../../api/Projects"
+import { Header, MemberButton } from "../layouts/MembersList"
+import { getProjectsInDb } from "../../api/Projects"
 import { getUsers } from "../../api/users"
-
-
-
 
 interface TaskSidebarTabsProps {
     handleArquive: () => void;
@@ -31,7 +28,6 @@ interface TaskSidebarTabsProps {
     handleUpdateInstance: (endedAt?: string) => void;
     taskListIdReference: string;
 }
-
 
 const TaskSidebarTabs = ({ handleArquive, formData, setFormData, handleUpdateInstance, taskListIdReference }: TaskSidebarTabsProps) => {
     const { id } = useParams<string>()
@@ -59,6 +55,7 @@ const TaskSidebarTabs = ({ handleArquive, formData, setFormData, handleUpdateIns
     const handleRemoveMembersInTask = (member: any) => {
         const updatedMembers = formData?.members?.filter((m: any) => m !== member)
         const updatedData = { ...formData, members: updatedMembers };
+        console.log(formData?.members?.filter((m: any) => m !== member))
         setFormData(updatedData);
         updateTask(id || '', taskListIdReference, formData.id || '', updatedData);
         toast.success("Membro removido com sucesso!");
@@ -76,7 +73,6 @@ const TaskSidebarTabs = ({ handleArquive, formData, setFormData, handleUpdateIns
         const getUsersData = async () => {
             const data = await getUsers()
             const members = Object.values(data)?.filter((user: any) => formData?.members?.includes(user.id))
-            console.log(members)
             setMembersData(members)
         }
         getUsersData()
@@ -91,20 +87,17 @@ const TaskSidebarTabs = ({ handleArquive, formData, setFormData, handleUpdateIns
                 <TabsContent value="membros" className="w-full" />
 
                 <TabsContent value="membros" className="w-full mt-2">
+                    <Header title={true} availableMembers={data} onAddMember={handleAddMembersInTask} ></Header>
                     <div className="max-w-20">
                         {
-                            membersData.length > 0 ? (
-                                membersData?.map((member) => (
-                                    <div key={member.id} className="mb-1">
-                                        <MemberButton
-                                            member={member}
-                                            onRemove={handleRemoveMembersInTask}
-                                        />
-                                    </div>
-                                ))
-                            ) : (
-                                <div className="text-center text-sm">Sem Membros, além de você.</div>
-                            )
+                            membersData?.map((member) => (
+                                <div key={member.id} className="mb-1">
+                                    <MemberButton
+                                        member={member}
+                                        onRemove={handleRemoveMembersInTask}
+                                    />
+                                </div>
+                            ))
                         }
                     </div>
                 </TabsContent>

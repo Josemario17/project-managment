@@ -67,7 +67,7 @@ export const TablePagination = ({ table }: TablePaginationProps) => (
     <div className="flex items-center justify-end">
         <div className="flex w-full items-center gap-8 lg:w-fit">
             <div className="flex w-fit items-center justify-center text-sm font-medium">
-                Página {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+                Página {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
             </div>
             <div className="ml-auto flex items-center gap-2 lg:ml-0">
                 <Button

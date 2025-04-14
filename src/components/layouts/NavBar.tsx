@@ -1,5 +1,4 @@
 import { Bell, MoreHorizontal, Users } from "lucide-react";
-import { Button } from "../ui/button";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -41,20 +40,7 @@ const Menubar = () => {
             Projectos
           </NavLink>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavLink
-            to="/tasks"
-            className={({ isActive }) =>
-              `px-3 py-2 rounded-md transition-colors ${isActive
-                ? "bg-blue-950 text-white"
-                : "hover:bg-blue-900/50"
-              }`
-            }
-          >
-            Minhas Tarefas
-          </NavLink>
-        </NavigationMenuItem>
-      </NavigationMenuList>
+     </NavigationMenuList>
     </NavigationMenu>
   );
 };
@@ -62,7 +48,6 @@ const Menubar = () => {
 const UserMenu = () => {
   const navigate = useNavigate()
   const { name } = useUserStore().userData || { name: "" };
-
   function deletePersistedData() {
     Cookies.remove("user_data")
   }
