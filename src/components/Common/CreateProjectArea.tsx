@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Calendar } from "../ui/calendar"
-import { pt } from 'date-fns/locale'
+import { id, pt } from 'date-fns/locale'
 import { cn } from "../../lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Label } from "../ui/label"
@@ -13,10 +13,12 @@ import { getUsers } from "../../api/users"
 import { useUserStore } from "../../store/UserStore"
 import { UseGlobalStore } from "../../store/GlobalStore"
 import { toast } from "sonner"
-import { addProjectInServer, ProjectData } from "../../api/Projects"
+import { addProjectInServer } from "../../api/Projects"
 import Spin from "./Spin"
 import { useNavigate } from "react-router-dom"
 import { TransformTIme } from "./Table/ProjectsTable"
+import { v4 as uuid4 } from 'uuid'
+import { projectType } from "../../lib/types"
 
 const FormAddProject = () => {
     const myId = useUserStore.getState().userData
@@ -24,14 +26,14 @@ const FormAddProject = () => {
     const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
     const from = UseGlobalStore.getState().date.from
     const to = UseGlobalStore.getState().date.to
-    const [formData, setFormData] = useState<ProjectData>({
+    const [formData, setFormData] = useState({
         title: "",
         description: "",
         host: myId || '',
         members: [myId] as any,
         startedAt: from,
         endedAt: to,
-        status: "in_progress"
+        status: "in_progress" as "in_progress" | "completed" | "delayed"
     })
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
@@ -46,7 +48,7 @@ const FormAddProject = () => {
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setFormData(prevState => ({ ...prevState, [name]: value }));
+        setFormData((prevState: any) => ({ ...prevState, [name]: value }));
     };
 
     const findUserById = (id: string) => {
@@ -54,22 +56,22 @@ const FormAddProject = () => {
     }
 
     const handleSelectHostChange = (value: any) => {
-        setFormData(prevState => ({ ...prevState, host: findUserById(value) }));
+        setFormData((prevState: any) => ({ ...prevState, host: findUserById(value) }));
     }
 
     const handleSelectChange = (value: any) => {
-        setFormData(prevState => ({ ...prevState, members: value }));
-        setMembers(prevState => prevState.filter((m: any) => m.id !== value));
+        setFormData((prevState: any) => ({ ...prevState, members: value }));
+        setMembers((prevState: any) => prevState.filter((m: any) => m.id !== value));
         addMembersInList(findUserById(value))
     };
 
     const addMembersInList = (member: any) => {
-        setSelectedMembers(prevState => ([...prevState, member]));
+        setSelectedMembers((prevState: any) => ([...prevState, member]));
     }
 
     const removeMembersInList = (member: any) => {
-        setSelectedMembers(prevState => prevState.filter((m: any) => m.id !== member.id));
-        setMembers(prevState => ([...prevState, member]));
+        setSelectedMembers((prevState: any) => prevState.filter((m: any) => m.id !== member.id));
+        setMembers((prevState: any) => ([...prevState, member]));
     }
 
     const validateForm = () => {
@@ -78,15 +80,17 @@ const FormAddProject = () => {
     }
 
     const organizeData = () => {
-        const { title, description, host } = formData;
-        const data = {
+        const { title, description, host, status } = formData;
+        const idGenerated = uuid4()
+        const data: projectType = {
+            id: idGenerated,
             title,
             description,
             host: host || '',
             members: selectedMembers,
             startedAt: from,
             endedAt: to,
-            status: formData.status
+            status: status
         }
         return data
     }
@@ -214,11 +218,12 @@ export const LeftSide = () => {
     })
 
     useEffect(() => {
+        console.log("date", date)
         setDate({
-            from: TransformTIme(date?.from), 
+            from: TransformTIme(date?.from),
             to: TransformTIme(date?.to)
         })
-    }, [date, setNewDate]);
+    }, [date, setDate]);
     return (
         <Calendar
             locale={pt}

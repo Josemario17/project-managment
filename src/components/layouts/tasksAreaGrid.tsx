@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { useParams } from "react-router-dom";
 import { GetProjects } from "../../hooks/getProjects";
 import { GetStatusPt } from "../Common/Table/DashboardTable";
+import MembersListContainer from "./MembersList";
 
 const classReturn = (text: 'in_progress' | 'completed' | 'delayed') =>
     text === 'completed' ?
@@ -11,8 +12,6 @@ const classReturn = (text: 'in_progress' | 'completed' | 'delayed') =>
         text === 'delayed' ?
             'border-red-500 text-red-500' :
             'border-gray-500 text-gray-500'
-
-
 
 export const InfoProject = () => {
     const { id } = useParams<string>()
@@ -58,12 +57,15 @@ export default function TasksAreaGrid() {
                         <TabsTrigger value="tasks" className="py-3 px-10 data-[state=active]:border-b-blue-950 border-b-4 rounded-none data-[state=active]:text-blue-950">
                             Tarefas
                         </TabsTrigger>
-                        <TabsTrigger value="timeline" className="py-3 px-10 data-[state=active]:border-b-blue-950 border-b-4 rounded-none data-[state=active]:text-blue-950">
+                        <TabsTrigger value="members" className="py-3 px-10 data-[state=active]:border-b-blue-950 border-b-4 rounded-none data-[state=active]:text-blue-950">
                             Membros
                         </TabsTrigger>
                     </TabsList>
                     <TabsContent value="tasks" className="w-full">
                         <TaskBoard />
+                    </TabsContent>
+                    <TabsContent value="members" className="w-full">
+                        <MembersListContainer />
                     </TabsContent>
                 </Tabs>
             </div>

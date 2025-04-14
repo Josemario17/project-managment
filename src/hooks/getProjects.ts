@@ -15,7 +15,8 @@ export const GetProjects = (ProjectId?: string) => {
             if(Data !== undefined && Data !== null && Object.keys(Data).length > 0){
                 const filteredProjects = Object.values(Data).filter((project: any) => 
                     project?.host?.id === myID?.id || 
-                    (project?.members && project?.members?.includes(myID))
+                    (project?.members && Array.isArray(project.members) && 
+                     project.members.some((member: any) => member?.id === myID?.id))
                 );
                 setProjectData(ProjectId ? [Data] : filteredProjects || []);
             }

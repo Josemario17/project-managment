@@ -9,6 +9,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { useUserStore } from "../../store/UserStore";
 import Cookies from "js-cookie";
+import NotificationPanel from "../Common/NotificationPanel";
 
 const Menubar = () => {
   return (
@@ -77,9 +78,14 @@ const UserMenu = () => {
         <Users className="h-4 w-4 mr-2" />
         {name}
       </div>
-      <Button variant="outline" className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 px-2">
-        <Bell></Bell>
-      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 p-2.5 rounded-md">
+          <Bell className="h-4 w-4"></Bell>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="border-0 mb-0 shadow-none">
+          <NotificationPanel></NotificationPanel>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DropdownMenu>
         <DropdownMenuTrigger className="bg-blue-950 hover:bg-blue-900/50 text-white border-blue-950 p-2.5 rounded-md">
           <MoreHorizontal className="h-4 w-4" />
@@ -104,6 +110,7 @@ export default function NavBar() {
         </div>
         <Menubar />
         <UserMenu />
+
       </header>
     </div>
   )

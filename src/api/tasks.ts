@@ -45,15 +45,26 @@ export const updateTask = async (projectId: string, taskListId: string, taskId: 
             description: data.description,
             status: data.status,
             priority: data.priority,
-            comments: data.comments,
+            comments: data.comments || [],
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
             endedAt: data.endedAt,
+            members: data.members || [],
         })
     }
     catch (error) {
         console.log(error)
         throw new Error("Error while updating task in server")
+    }
+}
+
+export const removeTask = async (projectId: string, taskListId: string, taskId: string)=>{
+    try{
+        await set(ref(db, `projects/${projectId}/taskList/${taskListId}/tasks/${taskId}`), null);
+    }
+    catch (error) {
+        console.log(error)
+        throw new Error("Error while removing task in server")
     }
 }
 

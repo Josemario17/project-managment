@@ -1,22 +1,21 @@
 
 import { get, getDatabase, ref, set } from "firebase/database";
-import { v4 as uuid4 } from 'uuid'
 import { db } from "../Config/conection";
 import { projectType } from "../lib/types";
 
 export const addProjectInServer = (data: projectType) =>{
   const db = getDatabase();
-  const idGenerated = uuid4()
   try {
-    set(ref(db, 'projects/' + idGenerated), {
-      id: idGenerated,
+    set(ref(db, 'projects/' + data.id), {
+      id: data.id,
       title: data.title,
       description: data.description,
       host: data.host,
       members: data.members,
       startedAt: data.startedAt,
       endedAt: data.endedAt,
-      status: data.status
+      status: data.status,
+      taskList: data?.taskList || []  
     })
   }
     catch (error) {

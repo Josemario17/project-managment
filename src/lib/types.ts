@@ -2,7 +2,6 @@ export interface User {
     id: string
     name: string
     email: string
-    avatar: string
   }
   
   export interface Comment {
@@ -25,6 +24,7 @@ export interface User {
     attachments?: string[]
     createdAt: string
     updatedAt: string
+    members?: string[] 
   }
   
   export interface ColumnData {
@@ -54,9 +54,10 @@ export interface User {
     id: string;
     title: string;
     description: string;
-    host: { name: string; };
+    host: { name: string; } | User | string;
     members: any[];
     startedAt: string;
     endedAt: string;
     status: 'in_progress' | 'completed' | 'delayed';
+    taskList?: []
   }
