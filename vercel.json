@@ -10,5 +10,8 @@
   "outputDirectory": "dist",
   "devCommand": "npm run dev",
   "cleanUrls": true,
-  "framework": "vite"
+  "framework": "vite",
+  "github": {
+    "silent": true
+  }
 }
