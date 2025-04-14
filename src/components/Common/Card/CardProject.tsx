@@ -1,4 +1,4 @@
-import { ArrowUpIcon, ArrowDownIcon, ClockIcon, UsersIcon } from "lucide-react"
+import { ArrowDownIcon, ClockIcon, UsersIcon } from "lucide-react"
 
 import { Badge } from "../../ui/badge"
 import {
@@ -9,7 +9,8 @@ import {
     CardTitle,
 } from "../../ui/card"
 import { Link } from "react-router-dom"
-import DashboardTableProjects, { projectType } from "../Table/DashboardTable"
+import DashboardTableProjects from "../Table/DashboardTable"
+import { projectType } from "../../../lib/types"
 import { GetProjects } from "../../../hooks/getProjects"
 
 

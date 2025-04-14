@@ -6,7 +6,7 @@ import {
 } from '../../../components/ui/card'
 import { GetProjects } from '../../../hooks/getProjects';
 import { useUserStore } from '../../../store/UserStore';
-import { projectType } from '../Table/DashboardTable';
+import { projectType } from '../../../lib/types';
 
 export function CardStats() {
   const { name } = useUserStore().userData || { name: "" };

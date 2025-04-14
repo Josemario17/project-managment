@@ -1,4 +1,3 @@
-import * as React from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "../../ui/button"
 import {
@@ -13,6 +12,7 @@ import { Project } from "../../../types/project"
 import { addProjectInServer } from "../../../api/Projects"
 import { toast } from "sonner"
 import { ProjectForm } from "./ProjectForm"
+import { projectType } from "../../../lib/types"
 
 interface ProjectTableViewerProps {
     item: Project
@@ -23,7 +23,13 @@ export const ProjectTableViewer = ({ item }: ProjectTableViewerProps) => {
 
     const handleUpdate = async (formData: Project) => {
         try {
-            await addProjectInServer(formData)
+            // Convert Project to projectType
+            const projectData: projectType = {
+                ...formData,
+                id: formData.id.toString(), // Convert id to string
+                members: [] // Add empty members array if needed
+            }
+            await addProjectInServer(projectData)
             toast.success('Dados atualizados')
             navigate(`/projects/${formData.id}`)
         } catch (error) {

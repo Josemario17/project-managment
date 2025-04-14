@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { Calendar } from "../ui/calendar"
-import { id, pt } from 'date-fns/locale'
+import { pt } from 'date-fns/locale'
 import { cn } from "../../lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 import { Label } from "../ui/label"
@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom"
 import { TransformTIme } from "./Table/ProjectsTable"
 import { v4 as uuid4 } from 'uuid'
 import { projectType } from "../../lib/types"
+import { DateRange } from "react-day-picker"
 
 const FormAddProject = () => {
     const myId = useUserStore.getState().userData
@@ -220,8 +221,8 @@ export const LeftSide = () => {
     useEffect(() => {
         console.log("date", date)
         setDate({
-            from: TransformTIme(date?.from),
-            to: TransformTIme(date?.to)
+            from: date?.from ? TransformTIme(date.from.toISOString()) : '',
+            to: date?.to ? TransformTIme(date.to.toISOString()) : ''
         })
     }, [date, setDate]);
     return (

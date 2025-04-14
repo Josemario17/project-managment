@@ -1,7 +1,6 @@
 import { GetProjects } from '../../../hooks/getProjects'
 import { projectType } from '../../../lib/types'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '../../ui/table'
-import Spin from '../Spin'
 
 export const GetStatusPt = (status: 'in_progress' | 'completed' | 'delayed') => {
     switch (status) {
@@ -39,7 +38,11 @@ const RowsCells = ({data}: { data: projectType[]}) => {
             {data.slice(0,4).map((project: projectType) => (
                 <TableRow key={project.id}>
                     <TableCell className="font-medium">{project.title}</TableCell>
-                    <TableCell>{project.host.name}</TableCell>
+                    <TableCell>
+                      {typeof project.host === 'string' 
+                        ? project.host 
+                        : project.host.name}
+                    </TableCell>
                     <TableCell>{project.endedAt}</TableCell>
                     <TableCell className="text-right">{GetStatusPt(project.status)}</TableCell>
                 </TableRow>

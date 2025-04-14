@@ -12,19 +12,20 @@ import {
 } from "@tanstack/react-table"
 import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core"
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
-import { Table as TableUI } from "./ui/table"
+import { Table as TableUI } from "../../ui/table"
 import { TableHeader } from "./TableHeader"
 import { TableRow } from "./TableRow"
 import { TablePagination } from "./TablePagination"
 import { TableToolbar } from "./TableToolbar"
+import { UniqueIdentifier } from "@dnd-kit/core"
 
-interface TableProps<TData, TValue> {
+interface TableProps<TData extends { id: UniqueIdentifier }, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
     onRowReorder?: (newData: TData[]) => void
 }
 
-export function Table<TData, TValue>({
+export function Table<TData extends { id: UniqueIdentifier }, TValue>({
     columns,
     data,
     onRowReorder,

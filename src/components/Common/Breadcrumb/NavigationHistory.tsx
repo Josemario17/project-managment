@@ -1,11 +1,10 @@
-import { ChevronDown, Slash } from "lucide-react"
+import { Slash } from "lucide-react"
 
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../../components/ui/breadcrumb"
 import { useParams } from "react-router-dom"
