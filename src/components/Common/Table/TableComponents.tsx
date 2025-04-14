@@ -104,7 +104,7 @@ export const TableToolbar = ({ table }: TableToolbarProps) => (
         <div className="flex flex-row justify-between items-center gap-2 w-full">
             <Input
                 id="search"
-                placeholder="Pesquisar... pojectos"
+                placeholder="Pesquisar pojectos"
                 className="w-auto grow bg-white"
                 value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
                 onChange={(e) => table.getColumn("title")?.setFilterValue(e.target.value)}

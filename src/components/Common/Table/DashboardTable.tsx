@@ -51,6 +51,7 @@ const RowsCells = ({data}: { data: projectType[]}) => {
 
 export default function DashboardTableProjects() {
     const { projectData } = GetProjects()
+
     return (
         <div className='bg-white p-4 rounded-lg border border-gray-200'>
             <Table>

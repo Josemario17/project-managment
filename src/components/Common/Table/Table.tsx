@@ -60,7 +60,6 @@ export function Table<TData, TValue>({
             const newData = [...data]
             const [removed] = newData.splice(oldIndex, 1)
             newData.splice(newIndex, 0, removed)
-
             onRowReorder?.(newData)
         }
     }
